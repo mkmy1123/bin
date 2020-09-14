@@ -7,14 +7,13 @@ def arrange_to_three_chars(day)
   day.to_i < 10 ? " #{day} " : "#{day} "
 end
 
-def background_color_reversal(today)
+def convert_reverse_color(today)
   "\e[7;37m#{today}\e[0m "
 end
 
 def today?(today, year, month, day)
-  if day != " " && today.month == month.to_i
-    today == Date.new(year.to_i, today.month, day.to_i)
-  end
+  year, month, day = [year, month, day].map!(&:to_i)
+  today == Date.new(year, month, day) unless day == 0
 end
 
 today = Date.today
@@ -31,20 +30,15 @@ first_day = Date.new(year, month , 1)
 last_day = Date.new(year, month , -1)
 
 # カレンダーに使用する配列を作成
-days = []
-(first_day.wday).times { days << " "  }
-1.upto(last_day.day) { |day| days << day }
-
-# 週ごとに配列を分ける
-weeks = days.each_slice(7).to_a
+days = ([" "] * first_day.wday) + (1..last_day.day).to_a
 
 # カレンダーの表示
 puts "      #{month}月 #{year}    "
 puts "日 月 火 水 木 金 土"
-weeks.each do |week|
+days.each_slice(7) do |week|
   week.each do |day|
     if today?(today, year, month, day)
-      print background_color_reversal(day)
+      print convert_reverse_color(day)
     else
       print arrange_to_three_chars(day)
     end
