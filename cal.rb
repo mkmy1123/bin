@@ -2,24 +2,29 @@
 require 'optparse'
 require 'date'
 
-today = Date.today
+# 表示に関するメソッド
+def arrange_to_three_chars(day)
+  day.to_i < 10 ? " #{day} " : "#{day} "
+end
 
+def background_color_reversal(today)
+  "\e[7;37m#{today}\e[0m "
+end
+
+def today?(today, year, month, day)
+  if day != " " && today.month == month.to_i
+    today == Date.new(year.to_i, today.month, day.to_i)
+  end
+end
+
+today = Date.today
 # コマンドライン引数を変数化
 options = ARGV.getopts("m:", "y:")
 
 # 月の設定
-if options["m"]
-  month = options["m"].to_i
-else
-  month = today.month
-end
-
+month = options["m"] || today.month
 # 年の設定
-if options["y"]
-  year = options["y"].to_i
-else
-  year = today.year
-end
+year = options["y"] || today.year
 
 # 月初月末の変数化
 first_day = Date.new(year, month , 1)
@@ -31,43 +36,19 @@ days = []
 1.upto(last_day.day) { |day| days << day }
 
 # 週ごとに配列を分ける
-weekdays = days.each_slice(7).to_a
-
-# 表示に関するものをメソッド化
-def arrange_to_three_chars(day)
-  if day.to_i < 10
-    " #{day} "
-  else
-    "#{day} "
-  end
-end
-
-def black_and_white_reversal(today)
-  "\e[7;37m#{today}\e[0m "
-end
-
-def today?(year, month, day)
-  today = Date.today
-  today.year == year &&
-  today.month == month &&
-  today.day == day
-end
-
-def enter_new_line
-  puts "\n"
-end
+weeks = days.each_slice(7).to_a
 
 # カレンダーの表示
 puts "      #{month}月 #{year}    "
 puts "日 月 火 水 木 金 土"
-weekdays.each do |week|
+weeks.each do |week|
   week.each do |day|
-    if today?(year, month, day)
-      print black_and_white_reversal(day)
+    if today?(today, year, month, day)
+      print background_color_reversal(day)
     else
       print arrange_to_three_chars(day)
     end
   end
-  enter_new_line
+  puts "\n"
 end
-enter_new_line
+puts "\n"
