@@ -2,18 +2,23 @@
 # frozen_string_literal: true
 
 def main(string_score)
+  frames = build_frames(string_score)
+  calc_point(frames)
+end
+
+def build_frames(string_score)
   scores = string_score.chars
 
   frames = Array.new(9) { [0, 0] }
   frames.push([0, 0, 0])
 
-  frame_count = 0
+  frame_number = 0
   frame_first_throw = true
   final_throw = false
 
   scores.each do |score_char|
     score = to_integer(score_char)
-    if final_frame?(frame_count)
+    if final_frame?(frame_number)
       if frame_first_throw
         frames[9][0] = score
         frame_first_throw = false
@@ -24,39 +29,42 @@ def main(string_score)
         frames[9][2] = score
       end
     elsif frame_first_throw
-      frames[frame_count][0] = score
+      frames[frame_number][0] = score
       case score
       when 10
-        frame_count += 1
+        frame_number += 1
         frame_first_throw = true
       else
         frame_first_throw = false
       end
     else
-      frames[frame_count][1] = score
-      frame_count += 1
+      frames[frame_number][1] = score
+      frame_number += 1
       frame_first_throw = true
     end
   end
+  frames
+end
 
-  point = frames.each_with_index.sum do |this_frame, this_time|
-    next_time = this_time + 1
-    next_frame = frames[next_time]
+def calc_point(frames)
+  point = frames.each_with_index.sum do |current_frame, current_frame_number|
+    next_frame_number = current_frame_number + 1
+    next_frame = frames[next_frame_number]
     case
-    when final_frame?(this_time)
-      this_frame.sum
-    when final_frame?(next_time) && strike?(this_frame)
+    when final_frame?(current_frame_number)
+      current_frame.sum
+    when final_frame?(next_frame_number) && strike?(current_frame)
       10 + next_frame[0..1].sum
-    when strike?(this_frame)
+    when strike?(current_frame)
       if strike?(next_frame)
-        10 + 10 + frames[next_time + 1][0]
+        10 + 10 + frames[next_frame_number + 1][0]
       else
         10 + next_frame.sum
       end
-    when spare?(this_frame)
-      10 + frames[next_time][0]
+    when spare?(current_frame)
+      10 + frames[next_frame_number][0]
     else
-      this_frame.sum
+      current_frame.sum
     end
   end
 end
