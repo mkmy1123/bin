@@ -47,7 +47,7 @@ def build_frames(string_score)
 end
 
 def calc_point(frames)
-  point = frames.each_with_index.sum do |current_frame, current_frame_number|
+  frames.each_with_index.sum do |current_frame, current_frame_number|
     next_frame_number = current_frame_number + 1
     next_frame = frames[next_frame_number]
     case
