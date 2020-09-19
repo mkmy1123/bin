@@ -10,24 +10,22 @@ def main(file_or_dir, options)
       array = build_array_all_files(fod)
       adjust_option_a(array, options)
       return if blank?(array)
-      if Dir.exist?(fod)
-        puts fod
-        display_data(array, options)
-      else
-        display_data(array, options)
-      end
+
+      puts fod if Dir.exist?(fod)
+      display_data(array, options)
     end
   else
-    array = build_array_all_files(".")
+    array = build_array_all_files('.')
     adjust_option_a(array, options)
-    return if is_blank?(array)
+    return if blank?(array)
+
     display_data(array, options)
   end
 end
 
 def build_array_all_files(path)
   array = []
-  if path == "."
+  if path == '.'
     Dir.open('.').each { |file| array << file }
   elsif Dir.exist?(path)
     Dir.open(path).each { |file| array << file }
@@ -46,9 +44,7 @@ def blank?(array)
 end
 
 def adjust_option_a(array, options)
-  unless options['a']
-    array.delete_if { |ary| ary[0] == "." }
-  end
+  array.delete_if { |ary| ary[0] == '.' } unless options['a']
 end
 
 def display_data(array, options)
@@ -64,13 +60,12 @@ end
 def sort_or_reverse_sort(array, options)
   array.sort!
   array.reverse! if options['r']
-  array
 end
 
 def display_long_result(array)
   total = calc_total_byte(array)
   puts "total #{total}"
-  array.each_with_index do |ary, idx|
+  array.each_with_index do |ary, _idx|
     stat = File::Stat.new(ary)
     filetype = convert_filettype(ary)
     mode = convert_mode(stat)
@@ -78,10 +73,10 @@ def display_long_result(array)
     username = Etc.getpwuid(stat.uid).name.ljust(12)
     groupname = Etc.getgrgid(stat.gid).name.ljust(7)
     size = convert_size(ary)
-    mtime = stat.mtime.strftime("%_m %d %R")
+    mtime = stat.mtime.strftime('%_m %d %R')
     name = convert_filename(ary)
     puts <<~INFO
-    #{filetype}#{mode}#{nlink} #{username}  #{groupname}#{size} #{mtime} #{name}
+      #{filetype}#{mode}#{nlink} #{username}  #{groupname}#{size} #{mtime} #{name}
     INFO
   end
 end
@@ -101,17 +96,17 @@ end
 
 def convert_filename(file)
   if File.symlink?(file)
-    name = "#{file} -> #{File.readlink(file)}"
+    "#{file} -> #{File.readlink(file)}"
   else
-    name = file
+    file
   end
 end
 
 def convert_filettype(file)
   case File.ftype(file)
-  when "directory" then 'd'
-  when "link" then 'l'
-  when "pipe" then 'p'
+  when 'directory' then 'd'
+  when 'link' then 'l'
+  when 'pipe' then 'p'
   else '-'
   end
 end
@@ -126,14 +121,14 @@ end
 
 def permission(string)
   case string
-  when "0" then "---"
-  when "1" then "--x"
-  when "2" then "-w-"
-  when "3" then "-wx"
-  when "4" then "r--"
-  when "5" then "r-x"
-  when "6" then "rw-"
-  when "7" then "rwx"
+  when '0' then '---'
+  when '1' then '--x'
+  when '2' then '-w-'
+  when '3' then '-wx'
+  when '4' then 'r--'
+  when '5' then 'r-x'
+  when '6' then 'rw-'
+  when '7' then 'rwx'
   end
 end
 
@@ -150,7 +145,6 @@ def to_equal_length(array)
   array.each_with_index do |r, idx|
     array[idx] = r.ljust(digits)
   end
-  array
 end
 
 def display_result(array)
