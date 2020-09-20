@@ -4,6 +4,7 @@
 require 'optparse'
 require 'etc'
 
+# ------------ outline  ------------
 def main(file_or_dir, options)
   if file_or_dir != []
     file_or_dir.each do |fod|
@@ -23,6 +24,7 @@ def main(file_or_dir, options)
   end
 end
 
+# ------------ processing infomation ------------
 def build_array_all_files(path)
   array = []
   if path == '.'
@@ -43,25 +45,18 @@ def blank?(array)
   array == []
 end
 
+# ------------ option a ------------
 def adjust_option_a(array, options)
   array.delete_if { |ary| ary[0] == '.' } unless options['a']
 end
 
-def display_data(array, options)
-  sort_or_reverse_sort(array, options)
-  if options['l']
-    display_long_result(array)
-  else
-    to_equal_length(array)
-    display_result(array)
-  end
-end
-
+# ------------ option r ------------
 def sort_or_reverse_sort(array, options)
   array.sort!
   array.reverse! if options['r']
 end
 
+# ------------ option l ------------
 def display_long_result(array)
   total = calc_total_byte(array)
   puts "total #{total}"
@@ -71,7 +66,7 @@ def display_long_result(array)
     mode = convert_mode(stat)
     nlink = stat.nlink.to_s.rjust(3)
     username = Etc.getpwuid(stat.uid).name.ljust(12)
-    groupname = Etc.getgrgid(stat.gid).name.ljust(7)
+    groupname = Etc.getgrgid(stat.gid).name.ljust(5)
     size = convert_size(ary)
     mtime = stat.mtime.strftime('%_m %d %R')
     name = convert_filename(ary)
@@ -81,6 +76,7 @@ def display_long_result(array)
   end
 end
 
+# ------------ arrange data for option l ------------
 def calc_total_byte(array)
   total = 0
   array.each do |ary|
@@ -134,9 +130,20 @@ end
 
 def convert_size(file)
   if File.symlink?(file)
-    File.readlink(file).size.to_s.rjust(6)
+    File.readlink(file).size.to_s.rjust(5)
   else
-    File.size(file).to_s.rjust(6)
+    File.size(file).to_s.rjust(5)
+  end
+end
+
+# ------------ dislay infomation ------------
+def display_data(array, options)
+  sort_or_reverse_sort(array, options)
+  if options['l']
+    display_long_result(array)
+  else
+    to_equal_length(array)
+    display_result(array)
   end
 end
 
