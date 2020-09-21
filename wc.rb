@@ -101,11 +101,13 @@ else
     end
   end
   # --> display total data
-  if option_l
-    puts "#{to_8char(total_line)} total"
-  else
-    puts <<~INFO
-      #{to_8char(total_line)}#{to_8char(total_string)}#{to_8char(total_bytes)} total
-    INFO
+  if path_or_error.length > 1
+    if option_l
+      puts "#{to_8char(total_line)} total"
+    else
+      puts <<~INFO
+        #{to_8char(total_line)}#{to_8char(total_string)}#{to_8char(total_bytes)} total
+      INFO
+    end
   end
 end
