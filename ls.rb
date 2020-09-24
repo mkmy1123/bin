@@ -5,21 +5,14 @@ require 'optparse'
 require 'etc'
 
 # ------------ outline  ------------
-def main(file_or_dir, options)
-  if file_or_dir != []
-    file_or_dir.each do |fod|
-      array = build_array_all_files(fod)
-      adjust_option_a(array, options)
-      return if blank?(array)
-
-      puts fod if Dir.exist?(fod)
-      display_data(array, options)
-    end
-  else
-    array = build_array_all_files('.')
+def main(files, options)
+  files << ('.') if files == []
+  files.each do |file|
+    array = build_array_all_files(file)
     adjust_option_a(array, options)
     return if blank?(array)
 
+    puts file + ":" if files.length >= 2
     display_data(array, options)
   end
 end
@@ -171,6 +164,6 @@ def display_result(array)
 end
 
 options = ARGV.getopts('a', 'r', 'l')
-file_or_dir = ARGV
+files = ARGV
 
-main(file_or_dir, options)
+main(files, options)
