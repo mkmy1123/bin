@@ -41,6 +41,7 @@ end
 # ------------ option a ------------
 def adjust_option_a(array, options)
   array.delete_if { |ary| ary[0] == '.' } unless options['a']
+  array << "" if array == []
 end
 
 # ------------ option r ------------
