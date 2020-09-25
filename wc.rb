@@ -41,19 +41,11 @@ def count_lines(lines)
 end
 
 def count_strings(lines)
-  string_count = 0
-  lines.each do |line|
-    string_count += line.split("\s").length
-  end
-  string_count
+  lines.sum { |line| line.split("\s").length }
 end
 
 def count_bytes(lines)
-  bytes = 0
-  lines.each do |line|
-    bytes += line.bytesize
-  end
-  bytes
+  lines.sum { |line| line.bytesize }
 end
 
 # ----- method to display info ------
@@ -61,41 +53,51 @@ def to_8char(data)
   data.to_s.rjust(8)
 end
 
+def hash_to_8char(hash)
+  string = ""
+  hash.each_value { |value| string += to_8char(value) }
+  string
+end
+
 # ----- variable for total data ------
-total_line = 0
-total_string = 0
-total_bytes = 0
+total = {
+  line: 0,
+  string: 0,
+  bytes: 0,
+}
+
+def calc_data(lines)
+  {
+    line_length: count_lines(lines),
+    string_length: count_strings(lines),
+    bytes: count_bytes(lines),
+  }
+end
 
 # ----- display data ------
 if lines # stdin
-  line_length = count_lines(lines)
-  string_length = count_strings(lines)
-  bytes = count_bytes(lines)
+  result = calc_data(lines)
   if option_l
-    puts to_8char(line_length)
+    puts to_8char(result[:line_length])
   else
-    puts <<~INFO
-      #{to_8char(line_length)}#{to_8char(string_length)}#{to_8char(bytes)}
-    INFO
+    puts hash_to_8char(result)
   end
 else
   path_or_error.each do |string|
     if File.exist?(string)
       path = string
       lines = IO.readlines(path)
-      line_length = count_lines(lines)
-      string_length = count_strings(lines)
-      bytes = count_bytes(lines)
+      result = calc_data(lines)
       if option_l
-        puts "#{to_8char(line_length)} #{path}"
+        puts "#{to_8char(result[:line_length])} #{path}"
       else
         puts <<~INFO
-          #{to_8char(line_length)}#{to_8char(string_length)}#{to_8char(bytes)} #{path}
+          #{hash_to_8char(result)} #{path}
         INFO
       end
-      total_line += line_length
-      total_string += string_length
-      total_bytes += bytes
+      total[:line] += result[:line_length]
+      total[:string] += result[:string_length]
+      total[:bytes] += result[:bytes]
     else
       puts string # error
     end
@@ -103,10 +105,10 @@ else
   # --> display total data
   if path_or_error.length > 1
     if option_l
-      puts "#{to_8char(total_line)} total"
+      puts "#{to_8char(total[:line])} total"
     else
       puts <<~INFO
-        #{to_8char(total_line)}#{to_8char(total_string)}#{to_8char(total_bytes)} total
+        #{hash_to_8char(total)} total
       INFO
     end
   end
