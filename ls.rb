@@ -6,14 +6,18 @@ require 'etc'
 
 # ------------ outline  ------------
 def main(files, options)
-  files << ('.') if files == []
+  files << ('.') if files.none?
   files.each do |file|
     array = build_array_all_files(file)
-    adjust_option_a(array, options)
-    return if blank?(array)
-
-    puts file + ":" if files.length >= 2
-    display_data(array, options)
+    if Dir.exist?(file)
+      puts file + ':' if files.length >= 2
+      adjust_option_a(array, options)
+      add_blank_when_array_is_blank(array)
+      display_data(array, options)
+    else
+      puts file
+      puts "\n" if files.length != 1
+    end
   end
 end
 
@@ -34,14 +38,13 @@ def build_array_all_files(path)
   array
 end
 
-def blank?(array)
-  array == []
+def add_blank_when_array_is_blank(array)
+  array << "" if array.none?
 end
 
 # ------------ option a ------------
 def adjust_option_a(array, options)
   array.delete_if { |ary| ary[0] == '.' } unless options['a']
-  array << "" if blank?(array)
 end
 
 # ------------ option r ------------
