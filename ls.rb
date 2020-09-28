@@ -41,7 +41,7 @@ end
 # ------------ option a ------------
 def adjust_option_a(array, options)
   array.delete_if { |ary| ary[0] == '.' } unless options['a']
-  array << "" if array == []
+  array << "" if blank?(array)
 end
 
 # ------------ option r ------------
@@ -54,7 +54,7 @@ end
 def display_long_result(array)
   total = calc_total_byte(array)
   puts "total #{total}"
-  array.each_with_index do |ary, _idx|
+  array.each do |ary|
     stat = File::Stat.new(ary)
     filetype = convert_filettype(ary)
     mode = convert_mode(stat)
