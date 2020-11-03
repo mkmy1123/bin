@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "json"
+require 'optparse'
 
 class User
   attr :birthday, :name
@@ -25,8 +26,25 @@ class User
   end
 end
 
-birthday, name = ARGV
-@user = User.new(birthday, name)
-File.open('/Users/miyagawamaki/bin/DB/birthday.json', 'a', 0o755) do |file|
-  file.puts @user.to_json
+birthday_array = IO.readlines('/Users/miyagawamaki/bin/DB/birthday.json', chomp: true)
+
+options = ARGV.getopts('s')
+name, birthday = ARGV if ARGV
+@user ||= User.new(birthday, name)
+
+birthday_data = []
+birthday_array.each do |line|
+  birthday_data << JSON.parse(line)
+end
+
+if options['s']
+  birthday_data.each do |birthday|
+    if birthday['name'] == name
+      puts birthday['birthday']
+    end
+  end
+else
+  File.open('/Users/miyagawamaki/bin/DB/birthday.json', 'a', 0o755) do |file|
+    file.puts @user.to_json unless @user.name.nil?
+  end
 end
