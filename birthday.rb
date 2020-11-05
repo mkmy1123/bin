@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "json"
+require 'json'
 require 'optparse'
 
 class User
@@ -41,6 +41,8 @@ if options['s']
   birthday_data.each do |birthday|
     if birthday['name'] == name
       puts birthday['birthday']
+    elsif birthday['birthday'] == name
+      puts birthday['name']
     end
   end
 else
